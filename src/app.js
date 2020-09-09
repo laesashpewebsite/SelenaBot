@@ -16,22 +16,21 @@ const SelenaBotId = "U01A6KT325R";
 slackEvents.on('message', (event) => {
         var tempString = event.text; 
         
-        
-        var index = tempString.indexOf("@SELENA Bot");
+        var includeString =`@${SelenaBotId}`
+        var index = tempString.includes(includeString);
         // The bot will first look for the substring "@SelanaBot /"
         //
         tempString = tempString.toUpperCase();
         //converting all strings sent to uppercase value 
         //to easily handle all cases 
         console.log("the index is "+index)
-        if(event.user !== SelenaBotId && index !== -1){
+        if(event.user !== SelenaBotId && index ){
             console.log("here");
             if(tempString.indexOf(`/HELP`) !== -1){
                 sendMessage(event.channel,`Can't help you yet but I can tell you, you are awesome`);
             }
             if(tempString.indexOf(`/EVENT`) !== -1  ){
-                sendMessage(event.channel, `Can't help you yet but you can ask 
-                                            your amazing Eboard in the meantime!`);
+                sendMessage(event.channel, `Can't help you yet but you can ask your amazing Eboard in the meantime!`);
             }       
 
         }
