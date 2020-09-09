@@ -13,6 +13,7 @@ const port = process.env.PORT || 3000;
 
 const SelenaBotId = "U01A6KT325R";
 
+//could possibl consider changing "message" to "app_mention" to make this easier 
 slackEvents.on('message', (event) => {
         var tempString = event.text; 
         
@@ -25,7 +26,8 @@ slackEvents.on('message', (event) => {
         //to easily handle all cases 
         console.log("the index is "+index)
         if(event.user !== SelenaBotId && index ){
-            console.log("here");
+            // this is to prevent from sending messages when te bot detects itself and 
+            //when @Selena  bot is not detected
             if(tempString.indexOf(`/HELP`) !== -1){
                 sendMessage(event.channel,`Can't help you yet but I can tell you, you are awesome`);
             }
@@ -34,8 +36,6 @@ slackEvents.on('message', (event) => {
             }       
 
         }
-        console.log("ending")
-
 })
 
 
