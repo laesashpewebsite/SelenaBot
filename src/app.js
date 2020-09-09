@@ -10,8 +10,21 @@ const slackSigningSecret = process.env.SLACK_SIGNING_SECRET;
 const slackEvents = createEventAdapter(slackSigningSecret);
 
 const port = process.env.PORT || 3000;
-
 const SelenaBotId = "U01A6KT325R";
+
+var unirest = require("unirest");
+
+var req = unirest("GET", "https://healthruwords.p.rapidapi.com/v1/quotes/");
+
+req.query({
+	"maxR": "1",
+});
+
+req.headers({
+	"x-rapidapi-host": "healthruwords.p.rapidapi.com",
+	"x-rapidapi-key": "3bc797064dmsh88cd64ba177bd18p15ebc0jsn41321cd9714e",
+	"useQueryString": true
+});
 
 slackEvents.on('app_mention', (event) => {
 
@@ -22,15 +35,22 @@ slackEvents.on('app_mention', (event) => {
             //when @Selena  bot is not detected
             if(tempString.includes(`/HELP`)){
                 //ENABLE THIS COMMENT TO POST TO SLACK
-                // sendMessage(event.channel,`Can't help you yet but I can tell you, you are awesome`);
-                console.log('in help')
+                 sendMessage(event.channel,`Can't help you yet but I can tell you, you are awesome`);
+                // console.log('in help')
             }
-            if(tempString.incldes(`/EVENT`)  ){
+            else if(tempString.includes(`/EVENT`)  ){
                 //ENABLE THIS COMMENT TO POST TO SLACK
-                // sendMessage(event.channel, `Can't help you yet but you can ask your amazing Eboard in the meantime!`);
-                console.log('in events');
+                 sendMessage(event.channel, `Can't help you yet but you can ask your amazing Eboard in the meantime!`);
+                // console.log('in events');
             }    
-            if(tempString.incldes(`/POINTS`))
+            else if(tempString.includes(`/POINTS`)){}
+            else if(tempString.includes(`/MOTIVATE`)){
+                 getMotivation(event.channel)
+            }
+            else{
+                // sendMessage(event.channel,`Did you want something? would you like for me to display the help list?`);
+
+            }
         }
 })
 eventText = (channelId,userId) =>{
@@ -48,13 +68,21 @@ scholarshiptext = (channelId,userId) =>{
     // and their due date:
     //"Scholarship_name - Scholarship_info: Scholarship_dueDate"
 }
-
-
-function hello (channelId, userId) {
-    sendMessage(channelId, `<@${userId}>  has brought me to life O.O`);
+getMotivation = (channelId) =>{
     
-    return;
+    console.log("in moti")
+    req.end(function (res) {
+        if (res.error) 
+        {
+            console.error(res.error)
+            throw new Error(res.error);
+        }
+        // var body = res.body;
+        console.log(res.body[0].media);
+        sendMessage(channelId, `Here is a motivational qoute: ${res.body[0].media}`);
+    });
 }
+
 
 const sendMessage = async (channel, message) =>{
     
@@ -77,6 +105,8 @@ const sendMessage = async (channel, message) =>{
     const server = await slackEvents.start(port);
    
     // Log a message when the server is ready
+    // getMotivation();
     console.log(`Listening for events on ${server.address().port}`);
+
 })();
 
