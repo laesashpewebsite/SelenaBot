@@ -1,0 +1,21 @@
+{
+  "name": "slackbot",
+  "version": "1.0.0",
+  "description": "A helpful bot for LAESA members",
+  "main": "src",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ."
+  },
+  "author": "LAESA Projects",
+  "license": "ISC",
+  "dependencies": {
+    "@slack/bolt": "^2.3.0",
+    "@slack/events-api": "^2.3.4",
+    "@slack/rtm-api": "^5.0.5",
+    "@slack/web-api": "^5.11.0",
+    "dotenv": "^8.2.0n",
+    "esm": "^3.2.25",
+    "start": "^5.1.0"
+  }
+}
