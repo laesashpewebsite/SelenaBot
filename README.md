@@ -18,3 +18,6 @@
 4. Paste the **https** link from ngrok onto requested URL
 5. finally run `npm start`
 6. Start testing! :smiley:
+
+### Resources we can use
+1. https://api.slack.com/events

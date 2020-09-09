@@ -13,30 +13,41 @@ const port = process.env.PORT || 3000;
 
 const SelenaBotId = "U01A6KT325R";
 
-//could possibl consider changing "message" to "app_mention" to make this easier 
-slackEvents.on('message', (event) => {
+slackEvents.on('app_mention', (event) => {
+
         var tempString = event.text; 
-        
-        var includeString =`@${SelenaBotId}`
-        var index = tempString.includes(includeString);
-        // The bot will first look for the substring "@SelanaBot /"
-        //
-        tempString = tempString.toUpperCase();
-        //converting all strings sent to uppercase value 
-        //to easily handle all cases 
-        console.log("the index is "+index)
-        if(event.user !== SelenaBotId && index ){
+        tempString = tempString.toUpperCase()        
+        if(event.user !== SelenaBotId ){
             // this is to prevent from sending messages when te bot detects itself and 
             //when @Selena  bot is not detected
-            if(tempString.indexOf(`/HELP`) !== -1){
-                sendMessage(event.channel,`Can't help you yet but I can tell you, you are awesome`);
+            if(tempString.includes(`/HELP`)){
+                //ENABLE THIS COMMENT TO POST TO SLACK
+                // sendMessage(event.channel,`Can't help you yet but I can tell you, you are awesome`);
+                console.log('in help')
             }
-            if(tempString.indexOf(`/EVENT`) !== -1  ){
-                sendMessage(event.channel, `Can't help you yet but you can ask your amazing Eboard in the meantime!`);
-            }       
-
+            if(tempString.incldes(`/EVENT`)  ){
+                //ENABLE THIS COMMENT TO POST TO SLACK
+                // sendMessage(event.channel, `Can't help you yet but you can ask your amazing Eboard in the meantime!`);
+                console.log('in events');
+            }    
+            if(tempString.incldes(`/POINTS`))
         }
 })
+eventText = (channelId,userId) =>{
+    //This function will do is it will output all the upcoming events 
+    //within a 2 week time span. Display their information accordingly like so:
+    // "Events_name is on Events_date: Events_description this event is worth this
+    // events is under Event_category so you will get Events_point if you attend"  
+}
+helpText = (channelId,userId) => {
+    //This function will output a list of potential commands so people can see how 
+    //SELENA Bot 
+}
+scholarshiptext = (channelId,userId) =>{
+    // This fucntion will provide a list of all available scholarships 
+    // and their due date:
+    //"Scholarship_name - Scholarship_info: Scholarship_dueDate"
+}
 
 
 function hello (channelId, userId) {
@@ -52,7 +63,7 @@ const sendMessage = async (channel, message) =>{
         channel: channel,
         text: message,
     });
-        console.log(`Successfully sent message ${result.ts} in conversation ${channel}`);
+        // console.log(`Successfully sent message ${result.ts} in conversation ${channel}`);
 
     }
     catch(error){
