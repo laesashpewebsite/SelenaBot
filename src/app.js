@@ -14,29 +14,27 @@ const port = process.env.PORT || 3000;
 const SelenaBotId = "U01A6KT325R";
 
 slackEvents.on('message', (event) => {
-        var tempString = event.text.toUpperCase(); 
-        //converting all strings sent to uppercase value 
-        //to easily handle all cases 
+        var tempString = event.text; 
         
-        var index = tempString.indexOf(`@${SelenaBotId} /`)
+        
+        var index = tempString.indexOf("@SELENA Bot");
         // The bot will first look for the substring "@SelanaBot /"
         //
+        tempString = tempString.toUpperCase();
+        //converting all strings sent to uppercase value 
+        //to easily handle all cases 
+        console.log("the index is "+index)
         if(event.user !== SelenaBotId && index !== -1){
-            if(event.text.indexOf('HELP') !== -1){
-                sendMessage(event.channel,`Can't help you yet but I can say you 
-                                            are awesome`)
+            console.log("here");
+            if(tempString.indexOf(`/HELP`) !== -1){
+                sendMessage(event.channel,`Can't help you yet but I can tell you, you are awesome`);
             }
-            if(event.text.indexOf('EVENT') !== -1  ){
+            if(tempString.indexOf(`/EVENT`) !== -1  ){
                 sendMessage(event.channel, `Can't help you yet but you can ask 
-                                            your amazing Eboard in the meantime!`)
+                                            your amazing Eboard in the meantime!`);
             }       
 
         }
-        // else {
-        //     // hello( event.channel,event.user,event.text)
-        //     console.log(`Received a message event: user ${event.user} in channel ${event.channel} says ${event.text}`);
-        //     // console.log(event.channel.info)
-        // }
         console.log("ending")
 
 })
