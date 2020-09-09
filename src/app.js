@@ -11,26 +11,39 @@ const slackEvents = createEventAdapter(slackSigningSecret);
 
 const port = process.env.PORT || 3000;
 
+const SelenaBotId = "U01A6KT325R";
 
 slackEvents.on('message', (event) => {
-        if(event.text==="H"){
+        var tempString = event.text.toUpperCase(); 
+        //converting all strings sent to uppercase value 
+        //to easily handle all cases 
+        
+        var index = tempString.indexOf(`@${SelenaBotId} /`)
+        // The bot will first look for the substring "@SelanaBot /"
+        //
+        if(event.user !== SelenaBotId && index !== -1){
+            if(event.text.indexOf('HELP') !== -1){
+                sendMessage(event.channel,`Can't help you yet but I can say you 
+                                            are awesome`)
+            }
+            if(event.text.indexOf('EVENT') !== -1  ){
+                sendMessage(event.channel, `Can't help you yet but you can ask 
+                                            your amazing Eboard in the meantime!`)
+            }       
 
-            console.log(`Received a message event: user ${event.user} in channel ${event.channel} says ${event.text}`);
-        // hello(event.channel, event.user)
         }
-        else {
-            hello( event.channel,event.user,event.text)
-            console.log(`Received a message event: user ${event.user} in channel ${event.channel} says ${event.text}`);
-            // console.log(event.channel.info)
-        }
+        // else {
+        //     // hello( event.channel,event.user,event.text)
+        //     console.log(`Received a message event: user ${event.user} in channel ${event.channel} says ${event.text}`);
+        //     // console.log(event.channel.info)
+        // }
         console.log("ending")
-    return;
+
 })
 
 
-function hello (channelId, userId, text) {
-    var string = text;
-    sendMessage(channelId, `Heya! <@${userId}>: ${string}`);
+function hello (channelId, userId) {
+    sendMessage(channelId, `<@${userId}>  has brought me to life O.O`);
     
     return;
 }

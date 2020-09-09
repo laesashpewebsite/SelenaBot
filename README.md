@@ -1,4 +1,4 @@
-# SelenaBot
+# SelenaBot :woman_dancing:
 
 ## Things You will need to install 
 1. Ngrok for temporary http posting
@@ -10,7 +10,7 @@
 ## How To Run 
 1. Create your .env file and include the tokens for 
     `SLACK_OAUTH_TOKEN = 'your-token'`
-    `SLACK_SIGNING_SECRET= 'your signing secret'`
+    `SLACK_SIGNING_SECRET= 'your-signing-secret'`
 
 2. In your terminal directory for ngrok run :
     `./ngrok http 3000`
