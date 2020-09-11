@@ -69,9 +69,9 @@ slackEvents.on("app_mention", (event) => {
     }
   }
 });
+
 var defaulText=(channelId)=>{
     sendMessage(channelId,'feature not implemented yet')
-
 }
 
 var eventText = (channelId, userId) => {
@@ -79,12 +79,18 @@ var eventText = (channelId, userId) => {
   //within a 2 week time span. Display their information accordingly like so:
   // "Events_name is on Events_date: Events_description this event is worth this
   // events is under Event_category so you will get Events_point if you attend"
-  sendMessage( channelId,`Can't help you yet <@${userId}> but you can ask your amazing Eboard in the meantime!` );
+  sendMessage(channelId, `Hola <@${userId}>, I can't help you right now with that, but you can ask your amazing Eboard in the meantime!`);
 
 };
 var helpText = (channelId, userId) => {
   //This function will output a list of potential commands so people can see how
   //SELENA Bot
+  var helpString = `these are my current list of commands: \n
+     /scholarships\n 
+     /motivate \n 
+     /events\n `;
+    sendMessage(channelId,helpString);
+    sendMessage(channelId,`also, you are awesome @${userID}`);
 
 };
 var scholarshipText = (channelId, userId) => {
