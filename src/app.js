@@ -26,51 +26,66 @@ req.headers({
 	"useQueryString": true
 });
 
+// can't figure out how to do replies
+
 slackEvents.on('app_mention', (event) => {
 
         var tempString = event.text; 
         tempString = tempString.toUpperCase()        
         if(event.user !== SelenaBotId ){
             // this is to prevent from sending messages when te bot detects itself and 
-            //when @Selena  bot is not detected
+            //when @Selena  bot is not detected in string
             if(tempString.includes(`/HELP`)){
                 //ENABLE THIS COMMENT TO POST TO SLACK
-                 sendMessage(event.channel,`Can't help you yet but I can tell you, you are awesome`);
                 // console.log('in help')
+                helpText(event.channel,event.user);
             }
             else if(tempString.includes(`/EVENT`)  ){
-                //ENABLE THIS COMMENT TO POST TO SLACK
-                 sendMessage(event.channel, `Can't help you yet but you can ask your amazing Eboard in the meantime!`);
-                // console.log('in events');
+                eventText(event.channel,event.user);
             }    
             else if(tempString.includes(`/POINTS`)){}
             else if(tempString.includes(`/MOTIVATE`)){
-                 getMotivation(event.channel)
+                 getMotivation(event.channel);
             }
+            else if(tempString.includes(`/SCHOLARSHIP`)){
+                scholarshiptext(event.channel,event.user);
+           }
             else{
-                // sendMessage(event.channel,`Did you want something? would you like for me to display the help list?`);
-
+                sendMessage(event.channel,`Hola, Did you want something?`);
+                helpText(event.channel,event.user);                
             }
         }
 })
-eventText = (channelId,userId) =>{
+eventText = (channelId,userID) =>{
     //This function will do is it will output all the upcoming events 
     //within a 2 week time span. Display their information accordingly like so:
     // "Events_name is on Events_date: Events_description this event is worth this
-    // events is under Event_category so you will get Events_point if you attend"  
+    // events is under Event_category so you will get Events_point if you attend" 
+
+     //ENABLE THIS COMMENT TO POST TO SLACK
+     sendMessage(channelId, `Hi @${userID}, I can't help you right now with that, but you can ask your amazing Eboard in the meantime!`);
+                
 }
-helpText = (channelId,userId) => {
-    //This function will output a list of potential commands so people can see how 
-    //SELENA Bot 
+helpText = (channelId,userID) => {
+    var helpString = `these are my current list of commands: \n
+     /scholarships\n 
+     /motivate \n 
+     /events\n `;
+    sendMessage(channelId,helpString);
+    sendMessage(channelId,`also, you are awesome @${userID}`);
 }
-scholarshiptext = (channelId,userId) =>{
+
+scholarshiptext = (channelId,userID) =>{
+    var ssString =  `I do not have the list yet but you are definitely worth all the scholarships @${userID}`
     // This fucntion will provide a list of all available scholarships 
     // and their due date:
     //"Scholarship_name - Scholarship_info: Scholarship_dueDate"
+    sendMessage(channelId,ssString);
+
 }
 getMotivation = (channelId) =>{
     
-    console.log("in moti")
+    // console.log("in moti")
     req.end(function (res) {
         if (res.error) 
         {
@@ -78,8 +93,8 @@ getMotivation = (channelId) =>{
             throw new Error(res.error);
         }
         // var body = res.body;
-        console.log(res.body[0].media);
-        sendMessage(channelId, `Here is a motivational qoute: ${res.body[0].media}`);
+        // console.log(res.body[0].media);
+        sendMessage(channelId, `Here is a motivational quote: ${res.body[0].media}`);
     });
 }
 
