@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Backend from './getBackend';
 // import backend from './getBackend'
 const { WebClient } = require("@slack/web-api");
 
@@ -7,13 +8,19 @@ const { createEventAdapter } = require("@slack/events-api");
 const dotenv = require("dotenv");
 dotenv.config();
 
-
+const backend = new Backend;
 const web = new WebClient(process.env.SLACK_OAUTH_TOKEN);
 const slackSigningSecret = process.env.SLACK_SIGNING_SECRET;
 const slackEvents = createEventAdapter(slackSigningSecret);
 
 const port = process.env.PORT || 3000;
-const SelenaBotId = "U01A6KT325R";
+const SelenaBotId = process.env.SELENABOTID;
+const eboardId_1="";
+const eboardId_2="";
+const eboardId_3="";
+const eboardId_4="";
+const eboardId_5="";
+const opId  =process.env.OPID; //ostavo's user id 
 
 var unirest = require("unirest");
 
@@ -40,27 +47,31 @@ slackEvents.on("app_mention", (event) => {
   if ( userId !== SelenaBotId) {
     // this is to prevent from sending messages when te bot detects itself and
     //when @Selena  bot is not detected
-    if (tempString.includes(`/HELP`)) 
+    if (tempString.includes(`HELP`)) 
     {
       //ENABLE THIS COMMENT TO POST TO SLACK
       sendMessage( channelId, `Can't help you yet but I can tell you, you are awesome`);
     } 
-    else if (tempString.includes(`/EVENT`))
+    else if (tempString.includes(`EVENT`))
     {
         eventText(channelId, userId)
     } 
-    else if (tempString.includes(`/SCHOLARSHIP`)) 
+    else if (tempString.includes(`SHOW SCHOLARSHIP`)) 
     {
       scholarshipText(channelId, userId);
     } 
-    else if (tempString.includes(`/MOTIVATE`)) 
+    else if (tempString.includes(`POST SCHOLARSHIP`)) 
+    {
+      postScholarships(channelId, userId, tempString.split("/"));
+    } 
+    else if (tempString.includes(`MOTIVATE`)) 
     {
       getMotivation(channelId);
     } 
-    else if(tempString.includes(`/SHOWPOINT`)){
+    else if(tempString.includes(`SHOWPOINT`)){
         defaulText(channelId);
     }
-    else if(tempString.includes(`/POSTPOINT`)){
+    else if(tempString.includes(`POSTPOINT`)){
         defaulText(channelId);
     }
     else {
@@ -86,15 +97,46 @@ var helpText = (channelId, userId) => {
   //This function will output a list of potential commands so people can see how
   //SELENA Bot
   var helpString = `these are my current list of commands: \n
-     /scholarships\n 
-     /motivate \n 
-     /events\n `;
+     show scholarships\n 
+     motivate \n 
+     events\n 
+     post scholarship\n
+     post point\n
+     show point`;
     sendMessage(channelId,helpString);
-    sendMessage(channelId,`also, you are awesome @${userID}`);
+    sendMessage(channelId,`also, you are awesome <@${userId}>`);
 
 };
+var postScholarships = (channelId, userId, tempString)=>{
+    // console.log(tempString);
+
+    // if(userId===opId){
+    //   sendMessage(channelId,`<@${userId}> you do not have authority to use this feature`);
+      
+    // }
+    // else{
+      axios
+      .post("https://laesa-backend.herokuapp.com/api/scholarships",
+      {
+        title:tempString[1],
+        description:tempString[2],
+        deadline:tempString[3]
+      })
+      .then( res =>{
+        console.log(res);
+      })
+      .catch(err => {
+        console.error(err);
+      })
+    // }
+}
 var scholarshipText = (channelId, userId) => {
     var tempString ='\n';
+    // tempString = backend.getScholarships( 
+    // console.log(`Backend connected! @${userId} upcoming scholarships are: ${tempString}`)
+      
+      // sendMessage(channelId,` <@${userId}> upcoming scholarships are: ${tempString}`)
+    // )
     axios
     .get("https://laesa-backend.herokuapp.com/api/scholarships")
     .then((res) => {
@@ -102,11 +144,11 @@ var scholarshipText = (channelId, userId) => {
         // console.log(scholarships);
         
         for (var i=0; i< scholarships.length; i++){
-            tempString += `${scholarships[i].title}: ${scholarships[i].description}. Due on ${scholarships[i].deadline}`;
+            tempString += `${scholarships[i].title}: ${scholarships[i].description}.\n Due on ${scholarships[i].deadline}`;
             tempString +='\n\n';
         }
-        // console.log(`Backend connected! @${userId} upcoming scholar are: ${tempString}`)
-        sendMessage(channelId,` <@${userId}> upcoming scholarships are: ${tempString}`)
+         //console.log(`Backend connected! @${userId} upcoming scholarships are: ${tempString}`)
+         sendMessage(channelId,` <@${userId}> upcoming scholarships are: ${tempString}`)
     });
 };
 var getMotivation = (channelId) => {
@@ -115,10 +157,10 @@ var getMotivation = (channelId) => {
       console.error(res.error);
       throw new Error(res.error);
     }
-    console.log(res.body[0].media);
+    // console.log(res.body[0].media);
     sendMessage(
       channelId,
-      `Here is a motivational qoute: ${res.body[0].media}`
+      `Here is a motivational quote: ${res.body[0].media}`
     );
   });
 };
@@ -132,12 +174,14 @@ const sendMessage = async (channel, message) => {
   } catch (error) {
     console.error(error);
   }
-  console.log("still sending");
+  // console.log("still sending");
 };
 
 (async () => {
   // Start the built-in server
   const server = await slackEvents.start(port);
 
+    // postScholarships('1','2','@seleanbot /title /ths is the description /'.split('/'));
+  // scholarshipText('1','2');
   console.log(`Listening for events on ${server.address().port}`);
 })();
