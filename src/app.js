@@ -1,5 +1,4 @@
 import axios from 'axios';
-import Backend from './getBackend';
 
 const { WebClient } = require("@slack/web-api");
 
