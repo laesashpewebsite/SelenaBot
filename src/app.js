@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Backend from './getBackend';
-// import backend from './getBackend'
+
 const { WebClient } = require("@slack/web-api");
 
 const { createEventAdapter } = require("@slack/events-api");
@@ -20,14 +20,12 @@ const eboardId_2="";
 const eboardId_3="";
 const eboardId_4="";
 const eboardId_5="";
-const opId  =process.env.OPID; //ostavo's user id 
+const opId  =process.env.OPID; //ostavo's user  id 
 
 var unirest = require("unirest");
 
 
 var req = unirest("GET", "https://healthruwords.p.rapidapi.com/v1/quotes/");
-
-let scholarships = {};
 
 req.query({
   maxR: "1",
@@ -40,21 +38,24 @@ req.headers({
 });
 
 slackEvents.on("app_mention", (event) => {
+  // console.log(event.user.name);
   var tempString = event.text;
   var userId = event.user;
   var channelId = event.channel;
   tempString = tempString.toUpperCase();
   if ( userId !== SelenaBotId) {
-    // this is to prevent from sending messages when te bot detects itself and
+    // this is to prevent from sending messages when the bot detects itself and
     //when @Selena  bot is not detected
     if (tempString.includes(`HELP`)) 
     {
       //ENABLE THIS COMMENT TO POST TO SLACK
       sendMessage( channelId, `Can't help you yet but I can tell you, you are awesome`);
+      helpText(channelId,userId);
     } 
     else if (tempString.includes(`EVENT`))
     {
-        eventText(channelId, userId)
+      defaulText(channelId);
+      // eventText(channelId, userId)
     } 
     else if (tempString.includes(`SHOW SCHOLARSHIP`)) 
     {
@@ -67,11 +68,16 @@ slackEvents.on("app_mention", (event) => {
     else if (tempString.includes(`MOTIVATE`)) 
     {
       getMotivation(channelId);
-    } 
-    else if(tempString.includes(`SHOWPOINT`)){
-        defaulText(channelId);
     }
-    else if(tempString.includes(`POSTPOINT`)){
+    else if (tempString.includes(`UPDATE USER`)) 
+    {
+      // getMotivation(channelId);
+    } 
+    else if(tempString.includes(`SHOW POINT`)){
+      getPoints(channelId,userId)  
+      // defaulText(channelId, userId);
+    }
+    else if(tempString.includes(`POST POINT`)){
         defaulText(channelId);
     }
     else {
@@ -83,6 +89,48 @@ slackEvents.on("app_mention", (event) => {
 
 var defaulText=(channelId)=>{
     sendMessage(channelId,'feature not implemented yet')
+}
+var scholarshipText = (channelId, userId) => {
+  var tempString ='\n';
+  var scholarships;
+  axios
+  .get("https://laesa-backend.herokuapp.com/api/scholarships")
+  .then((res) => {
+      scholarships = res.data;
+      // console.log(scholarships);
+      
+      for (var i=0; i< scholarships.length; i++){
+          tempString += `${scholarships[i].title}: ${scholarships[i].description}.\n Due on ${scholarships[i].deadline}`;
+          tempString +='\n\n';
+      }
+       //console.log(`Backend connected! @${userId} upcoming scholarships are: ${tempString}`)
+       sendMessage(channelId,` <@${userId}> upcoming scholarships are: ${tempString}`)
+  });
+};
+var getPoints = (channelId,userId)=>{
+  var tempString ="\n";
+  var member;
+  axios.get("https://laesa-backend.herokuapp.com/api/member")
+  .then( res =>{
+    member = res.data;
+    for (var i=0;i<member.length;i++){      
+      if(member[i].userid == userId){
+        tempString += `Name: ${member[i].fullname}\n`;
+        tempString += `Status: ${member[i].status}\n`;
+        if (member[i].status === "Admin"){ tempString+= "Eboard members don't get points "}
+        else {tempString += `Current Points: ${member[i].points}`;}
+        tempString +="\n\n";
+        console.log(member[i]);
+      }
+    }
+    if(tempString==='\n'){
+      tempString+='User not found, inform Eboard you are not in the system :)'
+    }
+  sendMessage(userId, tempString)
+  })
+  .catch(err => {
+    console.error(err);
+  })  
 }
 
 var eventText = (channelId, userId) => {
@@ -97,24 +145,20 @@ var helpText = (channelId, userId) => {
   //This function will output a list of potential commands so people can see how
   //SELENA Bot
   var helpString = `these are my current list of commands: \n
-     show scholarships\n 
+     show scholarship\n 
      motivate \n 
      events\n 
      post scholarship\n
      post point\n
      show point`;
     sendMessage(channelId,helpString);
-    sendMessage(channelId,`also, you are awesome <@${userId}>`);
+    // sendMessage(channelId,`also, you are awesome <@${userId}>`);
 
 };
 var postScholarships = (channelId, userId, tempString)=>{
-    // console.log(tempString);
-
-    // if(userId===opId){
-    //   sendMessage(channelId,`<@${userId}> you do not have authority to use this feature`);
-      
-    // }
-    // else{
+    // onnly eoard memebrs can usepost functions these are the ids for Kyle, Mino and Richard. 
+    //need Alex
+    if(userId === "UCV8N5FK4" || userId === "UDZFPJPQW" || userId === "UFVNKM6MV" || userId == "UNLNKNE3C"){ 
       axios
       .post("https://laesa-backend.herokuapp.com/api/scholarships",
       {
@@ -128,29 +172,11 @@ var postScholarships = (channelId, userId, tempString)=>{
       .catch(err => {
         console.error(err);
       })
-    // }
-}
-var scholarshipText = (channelId, userId) => {
-    var tempString ='\n';
-    // tempString = backend.getScholarships( 
-    // console.log(`Backend connected! @${userId} upcoming scholarships are: ${tempString}`)
-      
-      // sendMessage(channelId,` <@${userId}> upcoming scholarships are: ${tempString}`)
-    // )
-    axios
-    .get("https://laesa-backend.herokuapp.com/api/scholarships")
-    .then((res) => {
-        scholarships = res.data;
-        // console.log(scholarships);
-        
-        for (var i=0; i< scholarships.length; i++){
-            tempString += `${scholarships[i].title}: ${scholarships[i].description}.\n Due on ${scholarships[i].deadline}`;
-            tempString +='\n\n';
-        }
-         //console.log(`Backend connected! @${userId} upcoming scholarships are: ${tempString}`)
-         sendMessage(channelId,` <@${userId}> upcoming scholarships are: ${tempString}`)
-    });
-};
+    }
+    else{
+      sendMessage(channelId,"You don't have authority to post only Eboard members can post")
+    }
+} 
 var getMotivation = (channelId) => {
   req.end(function (res) {
     if (res.error) {
@@ -174,7 +200,6 @@ const sendMessage = async (channel, message) => {
   } catch (error) {
     console.error(error);
   }
-  // console.log("still sending");
 };
 
 (async () => {
