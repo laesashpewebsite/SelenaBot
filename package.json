@@ -15,7 +15,7 @@
     "@slack/rtm-api": "^5.0.5",
     "@slack/web-api": "^5.11.0",
     "axios": "^0.20.0",
-    "dotenv": "^8.2.0n",
+    "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "start": "^5.1.0",
     "unirest": "^0.6.0"
