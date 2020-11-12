@@ -8,7 +8,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const web = new WebClient(process.env.SLACK_OAUTH_TOKEN);
-const slackSigningSecret = '01a534dff903a715e2fffd031114765f';
+const slackSigningSecret = process.env.SLACK_SIGNING_SECRET;
 const slackEvents = createEventAdapter(slackSigningSecret);
 
 const port = process.env.PORT || 3000;
