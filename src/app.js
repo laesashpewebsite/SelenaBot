@@ -99,7 +99,7 @@ var scholarshipText = (channelId, userId) => {
       
       for (var i=0; i< scholarships.length; i++){
           tempString += `${scholarships[i].title}: ${scholarships[i].description}.\n Due on ${scholarships[i].deadline}`;
-          tempString +='\n\n';
+          tempString +='\n\n\n';
       }
        //console.log(`Backend connected! @${userId} upcoming scholarships are: ${tempString}`)
        sendMessage(channelId,` <@${userId}> upcoming scholarships are: ${tempString}`)
