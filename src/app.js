@@ -7,7 +7,6 @@ const { createEventAdapter } = require("@slack/events-api");
 const dotenv = require("dotenv");
 dotenv.config();
 
-const backend = new Backend;
 const web = new WebClient(process.env.SLACK_OAUTH_TOKEN);
 const slackSigningSecret = process.env.SLACK_SIGNING_SECRET;
 const slackEvents = createEventAdapter(slackSigningSecret);
