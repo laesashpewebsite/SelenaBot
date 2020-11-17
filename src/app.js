@@ -34,7 +34,16 @@ req.headers({
   "x-rapidapi-key": "3bc797064dmsh88cd64ba177bd18p15ebc0jsn41321cd9714e",
   useQueryString: true,
 });
-
+slackEvents.on("member_left_channel", (event)=>{
+  var message_left =`If you ever need me again just hit me up ;)`
+  sendMessage(event.user,message_left)
+});
+slackEvents.on("member_joined_channel", (event)=>{
+  var message_joined =`Hola <@${event.user}>, I see you have joined my channel <@${event.channel}>, Bienvenidos! `
+  message_joined+= "If you need anything from me "
+  sendMessage(event.user,message_joined)
+  helpText(event.user)
+});
 slackEvents.on("app_mention", (event) => {
   // console.log(event.user.name);
   var tempString = event.text;
@@ -47,7 +56,7 @@ slackEvents.on("app_mention", (event) => {
     if (tempString.includes(`HELP`)) 
     {
       //ENABLE THIS COMMENT TO POST TO SLACK
-      sendMessage( channelId, `Can't help you yet but I can tell you, you are awesome`);
+      sendMessage( userId, `Idk how to help you, but you are awesome! Keep it up!`);
       helpText(channelId,userId);
     } 
     else if (tempString.includes(`EVENT`))
@@ -63,7 +72,7 @@ slackEvents.on("app_mention", (event) => {
     {
       postScholarships(channelId, userId, tempString.split("/"));
     } 
-    else if (tempString.includes(`MOTIVATE`)) 
+    else if (tempString.includes(`INSPIRE`)) 
     {
       getMotivation(channelId);
     }
@@ -79,7 +88,7 @@ slackEvents.on("app_mention", (event) => {
         defaulText(channelId);
     }
     else {
-      sendMessage(channelId,`Did you want something? <@${userId}>?`);
+      sendMessage(channelId,`Hola, Did you want something? <@${userId}>?`);
       helpText(channelId,userId);
     }
   }
@@ -114,9 +123,15 @@ var getPoints = (channelId,userId)=>{
     for (var i=0;i<member.length;i++){      
       if(member[i].userid == userId){
         tempString += `Name: ${member[i].fullname}\n`;
-        tempString += `Status: ${member[i].status}\n`;
-        if (member[i].status === "Admin"){ tempString+= "Eboard members don't get points "}
-        else {tempString += `Current Points: ${member[i].points}`;}
+        if(member[i].status==="Admin")
+        
+        if (member[i].status === "Admin"){
+          tempString += `Status: Eboard Member\n`;
+          tempString+= "Points: Eboard members don't get points "}
+        else {
+          tempString += `Status: Member\n`;
+          tempString += `Current Points: ${member[i].points}`;
+        }
         tempString +="\n\n";
         console.log(member[i]);
       }
@@ -136,15 +151,15 @@ var eventText = (channelId, userId) => {
   //within a 2 week time span. Display their information accordingly like so:
   // "Events_name is on Events_date: Events_description this event is worth this
   // events is under Event_category so you will get Events_point if you attend"
-  sendMessage(channelId, `Hola <@${userId}>, I can't help you right now with that, but you can ask your amazing Eboard in the meantime!`);
+  sendMessage(channelId, `Hola <@${userId}>, I can't help you right now with that, but you can ask your amazing eboard in the meantime!`);
 
 };
-var helpText = (channelId, userId) => {
+var helpText = (channelId) => {
   //This function will output a list of potential commands so people can see how
   //SELENA Bot
   var helpString = `these are my current list of commands: \n
      show scholarship\n 
-     motivate \n 
+     inspire \n 
      events\n 
      post scholarship\n
      post point\n
@@ -172,7 +187,7 @@ var postScholarships = (channelId, userId, tempString)=>{
       })
     }
     else{
-      sendMessage(channelId,"You don't have authority to post only Eboard members can post")
+      sendMessage(channelId,"Perdon but, you don't have authority to post. Only Eboard members can post")
     }
 } 
 var getMotivation = (channelId) => {
@@ -184,7 +199,7 @@ var getMotivation = (channelId) => {
     // console.log(res.body[0].media);
     sendMessage(
       channelId,
-      `Here is a motivational quote: ${res.body[0].media}`
+      `Here is an Inspirational Quote quote: ${res.body[0].url}`
     );
   });
 };
