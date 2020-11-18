@@ -39,10 +39,11 @@ slackEvents.on("member_left_channel", (event)=>{
   sendMessage(event.user,message_left)
 });
 slackEvents.on("member_joined_channel", (event)=>{
-  var message_joined =`Hola <@${event.user}>, I see you have joined my channel <@${event.channel}>, Bienvenidos! `
+  helpText(event.user)
+  var message_joined =`Hola <@${event.user}>, I see you have joined my channel, Bienvenidos! `
   message_joined+= "If you need anything from me "
   sendMessage(event.user,message_joined)
-  helpText(event.user)
+  
 });
 slackEvents.on("app_mention", (event) => {
   // console.log(event.user.name);
@@ -199,7 +200,7 @@ var getMotivation = (channelId) => {
     // console.log(res.body[0].media);
     sendMessage(
       channelId,
-      `Here is an Inspirational Quote quote: ${res.body[0].url}`
+      `Here is an inspirational quote: ${res.body[0].url}`
     );
   });
 };
